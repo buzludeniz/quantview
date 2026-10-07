@@ -23,6 +23,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libegl1 \
+            libgl1 \
+            libglib2.0-0 \
+            libxkbcommon0 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-shape0 \
+            libxcb-xfixes0 \
+            libxcb-xinerama0 \
+            xvfb
+
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
@@ -46,7 +64,8 @@ jobs:
         run: uv run mypy src/quantview
 
       - name: Test
-        run: uv run pytest --cov=quantview --cov-report=xml --cov-fail-under=85
+        run: |
+          xvfb-run -a uv run pytest --cov=quantview --cov-report=xml --cov-fail-under=85
 
       - name: Upload coverage
         if: always()
