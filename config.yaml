@@ -1,0 +1,40 @@
+# QuantView Configuration
+# All values can be overridden via environment variables with prefix QUANTVIEW_
+# Example: QUANTVIEW_DATA_PATH=/custom/path/data.duckdb
+
+data_path: "./data/quantview.duckdb"
+polling_interval_seconds: 60
+
+# Default symbols to track (can be extended via UI)
+symbols:
+  - "SPY"
+  - "QQQ"
+  - "AAPL"
+  - "MSFT"
+  - "NVDA"
+
+# Alert thresholds (percentage change from previous close)
+alert_thresholds:
+  price_change_pct: 2.0
+  volume_spike_ratio: 3.0
+  iv_rank_change: 10.0
+
+# Email/SMTP configuration for alerts
+email_smtp:
+  host: "smtp.gmail.com"
+  port: 587
+  username: ""
+  password: ""
+  from_address: ""
+  to_addresses: []
+  use_tls: true
+
+# FRED API key (get from https://fred.stlouisfed.org/docs/api/api_key.html)
+fred_api_key: ""
+
+# Alpha Vantage API key (get from https://www.alphavantage.co/support/#api-key)
+alphavantage_api_key: ""
+
+# Logging
+log_level: "INFO"
+log_file: "./logs/quantview.log"

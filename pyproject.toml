@@ -1,0 +1,220 @@
+[project]
+name = "quantview"
+version = "0.1.0"
+description = "Local-first quantitative research and visualization for equities, rates, and options"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Deniz Ikili" }]
+keywords = ["quant", "finance", "visualization", "trading", "options", "yield-curve", "volatility-surface"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+dependencies = [
+    "duckdb>=1.1.0",
+    "yfinance>=0.2.50",
+    "fredapi>=0.4.3",
+    "plotly>=5.24.0",
+    "ipywidgets>=8.1.0",
+    "ipykernel>=6.29.0",
+    "jupyterlab>=4.2.0",
+    "PyQt6>=6.7.0",
+    "pyqtgraph>=0.13.7",
+    "PyQt6-Charts>=6.7.0",
+    "pydantic-settings>=2.5.0",
+    "apscheduler>=3.10.4",
+    "pytz>=2024.2",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "scipy>=1.13.0",
+    "requests>=2.32.0",
+    "lxml>=5.2.0",
+    "pyyaml>=6.0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+]
+# Options analytics (Greeks, implied volatility, SVI volatility surfaces) need the
+# Black-Scholes kernel. It is an extra rather than a hard requirement so that a
+# standalone `pip install quantview` still works: the modules that need it raise
+# a clear ImportError and the related tests skip with a reason.
+surfaces = [
+    "black-scholes-model>=0.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/buzludeniz/quantview"
+Repository = "https://github.com/buzludeniz/quantview"
+Issues = "https://github.com/buzludeniz/quantview/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+# Resolved from GitHub rather than PyPI while the kernel is unpublished there.
+# A direct URL is not permitted inside an extra, so the version requirement
+# lives in `project.optional-dependencies` and the source is declared here.
+black-scholes-model = { git = "https://github.com/buzludeniz/black_scholes_model.git" }
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "RUF", # ruff-specific
+]
+ignore = [
+    "E501",  # line too long (handled by line-length)
+    "B008",  # function calls in default arguments
+    "T20",   # print statements are intentional in CLI scripts
+    # QuantView names variables after the standard notation of the formulas they
+    # implement: T for time to maturity, F for the forward price, K for strike,
+    # dS/dVol for finite-difference bump sizes. Renaming them to satisfy the
+    # naming rule would put the code further from the maths it mirrors.
+    "N806",
+    # Greek letters (rho, sigma) are the conventional names for SVI and
+    # volatility parameters, both in docstrings and in user-facing labels.
+    "RUF001", "RUF002", "RUF003",
+    # try/except ImportError/pass is how the optional-dependency probes read.
+    # contextlib.suppress would be shorter but hides which import is optional.
+    "SIM105",
+]
+# Unused imports in an __init__.py are re-exports, which is the point of them.
+# The desktop package keeps Qt's naming: closeEvent is an overridden Qt method
+# and the pyqtSignal attributes are camelCase by Qt's contract, not ours.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"src/quantview/desktop/*" = ["N802", "N815"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+strict_optional = true
+show_error_codes = true
+pretty = true
+
+[[tool.mypy.overrides]]
+# scipy is untyped, so every value that passes through it arrives as Any and
+# warn_return_any then flags the return. The affected functions are the curve
+# fits, whose results are checked numerically by the test suite.
+module = ["quantview.analytics.curves", "quantview.notebook.charts"]
+disable_error_code = ["no-any-return"]
+
+[[tool.mypy.overrides]]
+# PyQt6 ships no stubs: a widget accessor is typed Optional even though a live
+# widget always has one, so every statusBar() or legend() use reads as an error
+# on an attribute that is in fact there. The desktop package is thin glue over
+# the chart classes and its behaviour is covered by the offscreen Qt tests.
+module = ["quantview.desktop.*"]
+# call-overload and override are here for the same reason as the codes above: the
+# stubs are absent, so a signal payload is typed object and the closeEvent
+# override cannot be checked against the (unstubbed) supertype signature.
+disable_error_code = [
+    "union-attr",
+    "arg-type",
+    "no-any-return",
+    "assignment",
+    "index",
+    "call-overload",
+    "override",
+]
+
+[[tool.mypy.overrides]]
+# Third-party packages that ship no type information. Listed individually rather
+# than switching ignore_missing_imports on globally, so a genuinely misspelled
+# import inside quantview still fails the check.
+module = [
+    "apscheduler.*",
+    "duckdb.*",
+    "fredapi.*",
+    "ipywidgets.*",
+    "matplotlib.*",
+    "plotly.*",
+    "pytz.*",
+    "PyQt6.*",
+    "scipy.*",
+    "seaborn.*",
+    "yfinance.*",
+    # scikit-learn backs the PCA factor path and kaleido backs static image
+    # export. Neither is a declared dependency: both are imported only to test
+    # availability, and the guarded path names what to install.
+    "kaleido.*",
+    "sklearn.*",
+]
+ignore_missing_imports = true
+
+# pandas ships no bundled stubs, so its absence is expected rather than a
+# misspelled import.
+[[tool.mypy.overrides]]
+module = ["pandas.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+# Coverage is always measured and printed. The pass/fail threshold is applied
+# explicitly in CI rather than here, so that a partial run (a single test file,
+# or --collect-only) does not report failure for a suite that is green.
+addopts = [
+    "--tb=short",
+    "--cov=quantview",
+    "--cov-report=term-missing",
+]
+
+[tool.coverage.run]
+source = ["quantview"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quantview"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/quantview", "tests", "README.md", "LICENSE", "config.yaml"]
