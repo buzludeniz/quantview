@@ -65,7 +65,7 @@ jobs:
 
       - name: Test
         run: |
-          xvfb-run -a uv run pytest --cov=quantview --cov-report=xml --cov-fail-under=85
+          xvfb-run -a uv run pytest --cov=quantview --cov-report=xml --cov-fail-under=85             --markers             -o markers="integration: marks tests as integration tests (require live API keys)"             -v
 
       - name: Upload coverage
         if: always()
