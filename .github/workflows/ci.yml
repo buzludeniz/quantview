@@ -64,8 +64,11 @@ jobs:
         run: uv run mypy src/quantview
 
       - name: Test
-        run: |
-          xvfb-run -a uv run pytest --cov=quantview --cov-report=xml --cov-fail-under=85             --markers             -o markers="integration: marks tests as integration tests (require live API keys)"             -v
+        # xvfb-run supplies the virtual display PyQt6 needs on a headless runner.
+        # The integration marker is registered in pyproject.toml under
+        # [tool.pytest.ini_options]; do not pass --markers here, because that flag
+        # makes pytest print the marker list and exit without running a single test.
+        run: xvfb-run -a uv run pytest --cov=quantview --cov-report=xml --cov-fail-under=85
 
       - name: Upload coverage
         if: always()

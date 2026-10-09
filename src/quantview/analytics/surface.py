@@ -12,27 +12,15 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-SVICurve: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-SVIFit: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-VolSurface: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-OptionParams: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-OptionType: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-black_scholes_price: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-implied_volatility: Any
+# Explicitly bind to None so the names exist in the module namespace when
+# the optional dependency is absent. The try/except rebinds on success.
+SVICurve: Any = None
+SVIFit: Any = None
+VolSurface: Any = None
+OptionParams: Any = None
+OptionType: Any = None
+black_scholes_price: Any = None
+implied_volatility: Any = None
 try:
     from black_scholes import (  # noqa: F401 - probed for availability, used only as a guard
         OptionParams,

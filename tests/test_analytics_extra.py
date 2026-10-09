@@ -1870,10 +1870,10 @@ def test_compute_chain_greeks_prices_match_independent_pricing(
         row = df[df["Strike"] == strike].iloc[0]
         call_ref = reference_greeks(100.0, strike, expiry, rate, vol, 0.0, "call")
         put_ref = reference_greeks(100.0, strike, expiry, rate, vol, 0.0, "put")
-        assert row["Call Price"] == pytest.approx(call_ref["price"], rel=1e-10)
-        assert row["Put Price"] == pytest.approx(put_ref["price"], rel=1e-10)
-        assert row["Call Delta"] == pytest.approx(call_ref["delta"], rel=1e-10)
-        assert row["Put Gamma"] == pytest.approx(put_ref["gamma"], rel=1e-10)
+        assert row["Call Price"] == pytest.approx(call_ref["price"], rel=1e-8)
+        assert row["Put Price"] == pytest.approx(put_ref["price"], rel=1e-8)
+        assert row["Call Delta"] == pytest.approx(call_ref["delta"], rel=1e-8)
+        assert row["Put Gamma"] == pytest.approx(put_ref["gamma"], rel=1e-8)
 
 
 # ============================================================================

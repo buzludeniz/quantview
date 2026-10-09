@@ -26,6 +26,7 @@ from .export import (
     quick_export,
 )
 from .widgets import (
+    create_chart_dashboard,
     create_chart_type_selector,
     create_date_picker,
     create_date_range_picker,

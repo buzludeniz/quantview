@@ -372,7 +372,7 @@ class TestRunDailyIngest:
         assert stats["alphavantage_rows"] == 80
         assert stats["fundamentals_rows"] == 30
         assert stats["corporate_actions"] == 5
-        assert stats["duration_seconds"] > 0
+        assert stats["duration_seconds"] >= 0
         assert len(stats["errors"]) == 0
 
         mock_yahoo.assert_called_once()

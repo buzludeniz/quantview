@@ -10,9 +10,11 @@ and running data ingestion pipelines. Can be invoked via CLI:
 
 import argparse
 import logging
+import signal
 import sys
 import time
 from datetime import datetime, timedelta
+from types import FrameType
 from typing import Any
 
 import duckdb
@@ -834,6 +836,15 @@ def run_scheduler() -> None:
     logger.info("Scheduler configured with jobs:")
     for job in scheduler.get_jobs():
         logger.info(f"  - {job.name}: {job.trigger}")
+
+    def _shutdown(signum: int, frame: FrameType | None) -> None:
+        logger.info(f"Received signal {signum}, shutting down scheduler...")
+        scheduler.shutdown(wait=True)
+        sys.exit(0)
+
+    # Handle both SIGTERM (container stop) and SIGINT (Ctrl+C)
+    signal.signal(signal.SIGTERM, _shutdown)
+    signal.signal(signal.SIGINT, _shutdown)
 
     try:
         scheduler.start()

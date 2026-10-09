@@ -18,22 +18,13 @@ from plotly.subplots import make_subplots
 
 # Optional Black-Scholes for SVI integration. Declared up front so the names are
 # known to be optional: without the extra they bind None and the SVI paths
-# refuse with a message naming the install.
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-SVICurve: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-SVIFit: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-VolSurface: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-black_scholes_price: Any
-# Declared before the import so each name is known to be optional: the kernel
-# ships as an extra, and a missing install binds None rather than failing here.
-OptionParams: Any
+# Explicitly bind to None so the names exist in the module namespace when
+# the optional dependency is absent. The try/except rebinds on success.
+SVICurve: Any = None
+SVIFit: Any = None
+VolSurface: Any = None
+black_scholes_price: Any = None
+OptionParams: Any = None
 try:
     from black_scholes import (
         OptionParams,

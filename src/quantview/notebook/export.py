@@ -134,7 +134,11 @@ def export_image(
         engine: 'kaleido' or 'orca' (orca deprecated).
     """
     if not KALEIDO_AVAILABLE and engine == "kaleido":
-        raise RuntimeError("kaleido not installed. Run: pip install kaleido")
+        raise RuntimeError(
+            "kaleido not installed. Run: pip install kaleido "
+            "or install quantview with the export extra: "
+            "pip install quantview[export]"
+        )
 
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

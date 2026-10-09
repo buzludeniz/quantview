@@ -15,7 +15,9 @@ from typing import Any
 import ipywidgets as widgets
 from IPython.display import display
 
-SVICurve: Any
+# Explicitly bind to None so the name exists in the module namespace when
+# the optional dependency is absent. The try/except rebinds on success.
+SVICurve: Any = None
 try:
     from black_scholes.surface import SVICurve
 except ImportError:

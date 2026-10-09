@@ -3,6 +3,7 @@
 Provides thread-safe connection handling for the QuantView DuckDB database.
 """
 
+import atexit
 import threading
 from collections.abc import Generator
 from contextlib import contextmanager
@@ -77,6 +78,10 @@ def close_connection() -> None:
         if conn is not None:
             conn.close()
             setattr(_local, key, None)
+
+
+# Register atexit handler to ensure connections are closed on process exit
+atexit.register(close_connection)
 
 
 @contextmanager

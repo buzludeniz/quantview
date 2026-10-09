@@ -56,6 +56,9 @@ dev = [
 surfaces = [
     "black-scholes-model>=0.2.0",
 ]
+export = [
+    "kaleido>=0.2.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/buzludeniz/quantview"
@@ -192,6 +195,9 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+markers = [
+    "integration: marks tests as integration tests (require live API keys)",
+]
 # Coverage is always measured and printed. The pass/fail threshold is applied
 # explicitly in CI rather than here, so that a partial run (a single test file,
 # or --collect-only) does not report failure for a suite that is green.

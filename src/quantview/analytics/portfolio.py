@@ -13,11 +13,11 @@ import numpy as np
 import pandas as pd
 from scipy import linalg
 
-# Declared before the import so the name is known to be optional; binding a
-# real type or None to it afterwards satisfies both readings.
-OptionParams: Any
-OptionType: Any
-black_scholes_greeks: Any
+# Explicitly bind to None so the names exist in the module namespace when
+# the optional dependency is absent. The try/except then rebinds on success.
+OptionParams: Any = None
+OptionType: Any = None
+black_scholes_greeks: Any = None
 try:
     from black_scholes import OptionParams, OptionType, black_scholes_greeks
 except ImportError:
