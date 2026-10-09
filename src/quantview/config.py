@@ -106,10 +106,16 @@ class Settings(BaseSettings):
             file_secret_settings,
         )
 
-    def model_post_init(self, __context: object) -> None:
-        # Ensure data directory exists
+    def ensure_directories(self) -> None:
+        """Create the data and log directories.
+
+        Deliberately not done in the constructor. Building a settings object is a
+        read, and a read must not fail because the configured path is not
+        writable: a read-only container, a root-owned path, or a cross-platform
+        path like "/custom" all raised PermissionError out of ``Settings()``.
+        Directory creation happens where a path is actually opened instead.
+        """
         self.data_path.parent.mkdir(parents=True, exist_ok=True)
-        # Ensure log directory exists
         self.log_file.parent.mkdir(parents=True, exist_ok=True)
 
 

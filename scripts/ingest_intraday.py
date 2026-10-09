@@ -30,6 +30,7 @@ def main() -> int:
 
     # Configure logging
     settings = get_settings()
+    settings.ensure_directories()
     log_level = (
         logging.DEBUG
         if args.verbose

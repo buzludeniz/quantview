@@ -893,8 +893,10 @@ def main() -> int:
         parser.print_help()
         return 1
 
-    # Configure logging
+    # Configure logging. The directory has to exist before FileHandler opens the
+    # file; Settings no longer creates it as a constructor side effect.
     settings = get_settings()
+    settings.ensure_directories()
     logging.basicConfig(
         level=getattr(logging, settings.log_level.upper(), logging.INFO),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
