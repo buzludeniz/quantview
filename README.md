@@ -7,12 +7,12 @@ A Python-based quantitative research platform for equity and options analysis wi
 ## Features
 
 - **Local-First Architecture**: All data stored locally in DuckDB - no cloud dependencies
-- **Multi-Asset Coverage**: Equities, options chains, futures, and macro/fundamental data
+- **Multi-Asset Coverage**: Equities, options chains, rates, and macro/fundamental data
 - **Real-Time & Historical**: Live polling with configurable intervals + historical backfill
 - **Greeks & IV Analytics**: Black-Scholes Greeks, IV surface modeling, term structure
 - **Desktop GUI**: PyQt6-based interface with pyqtgraph/Plotly visualizations
-- **Extensible**: Plugin architecture for custom data sources and strategies
-- **Alerting**: Configurable price/volume/IV alerts with email notifications
+- **Extensible**: Data connectors share a common base class (`data/connectors/base.py`) with caching and retry, so new sources slot in alongside the built-in ones
+- **Alerting (planned)**: Price/volume alert thresholds and SMTP settings are configurable and the schema has an `alerts` table; sending notifications is not implemented yet
 
 ## Quick Start
 
@@ -160,7 +160,9 @@ uv add --dev <package>
 
 - **Yahoo Finance** (yfinance): Equity prices, options chains, fundamentals
 - **FRED** (fredapi): Macroeconomic time series
-- **Custom**: Extensible plugin system for additional sources
+- **Alpha Vantage**: Equities and fundamentals
+- **CBOE**: Option chains with Greeks
+- **Custom**: Subclass `BaseConnector` to add another source
 
 ## License
 
