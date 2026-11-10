@@ -796,7 +796,6 @@ def create_output_area() -> widgets.Output:
             width="100%",
             min_height="500px",
             border="1px solid #30363d",
-            border_radius="4px",
         )
     )
 
