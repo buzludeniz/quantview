@@ -12,7 +12,7 @@ A Python-based quantitative research platform for equity and options analysis wi
 - **Greeks & IV Analytics**: Black-Scholes Greeks, IV surface modeling, term structure
 - **Desktop GUI**: PyQt6-based interface with pyqtgraph/Plotly visualizations
 - **Extensible**: Data connectors share a common base class (`data/connectors/base.py`) with caching and retry, so new sources slot in alongside the built-in ones
-- **Alerting (planned)**: Price/volume alert thresholds and SMTP settings are configurable and the schema has an `alerts` table; sending notifications is not implemented yet
+- **Alerting**: after every daily/intraday ingest, price-change and volume-spike thresholds are evaluated, fired alerts are stored in the `alerts` table and emailed over SMTP (see [Alerting](#alerting))
 
 ## Quick Start
 
@@ -108,6 +108,33 @@ Environment variables override config.yaml values with prefix `QUANTVIEW_` and d
 QUANTVIEW_DATA_PATH=/custom/path.duckdb
 QUANTVIEW_ALERT_THRESHOLDS__PRICE_CHANGE_PCT=3.0
 ```
+
+## Alerting
+
+After each `daily` or `intraday` ingest QuantView evaluates the thresholds in `alert_thresholds` against the newest bar of every symbol in `raw.yahoo_equities`:
+
+| Alert type | Fires when | Threshold |
+|------------|------------|-----------|
+| `price_change` | absolute close-to-close change of the latest bar is at least the threshold (%) | `price_change_pct` |
+| `volume_spike` | latest volume is at least the threshold times the mean of the previous 20 bars (needs 5+ bars) | `volume_spike_ratio` |
+
+A threshold of `0` (or less) disables that check. `iv_rank_change` is accepted in the configuration but not yet evaluated, because no IV-rank series is stored.
+
+An alert fires once when the condition becomes true and not again while it stays true; it re-arms after a bar where the condition does not hold. Re-running an ingest on the same data never repeats an alert. Severity is `critical` at twice the threshold or more, otherwise `warning`. Alerts are rows in the `alerts` table (`metadata` JSON holds `bar_date`, `value`, `threshold`).
+
+Fired alerts from one ingest are sent as a single email. Configure SMTP in `config.yaml` or the environment, and keep credentials out of the repository:
+
+```bash
+export QUANTVIEW_EMAIL_SMTP__HOST="smtp.example.com"
+export QUANTVIEW_EMAIL_SMTP__PORT=587
+export QUANTVIEW_EMAIL_SMTP__USE_TLS=true          # STARTTLS; set false for a plain local relay
+export QUANTVIEW_EMAIL_SMTP__USERNAME="user"       # optional; login only if set
+export QUANTVIEW_EMAIL_SMTP__PASSWORD="app_password"
+export QUANTVIEW_EMAIL_SMTP__FROM_ADDRESS="quantview@example.com"
+export QUANTVIEW_EMAIL_SMTP__TO_ADDRESSES='["me@example.com"]'
+```
+
+If the sender or recipients are not set, alerts are still stored and delivery is recorded as `skipped`. A delivery error (refused connection, TLS or login failure, ...) never fails the ingest: it is logged and stored as `metadata.delivery` (`{"status": "failed", "error": ...}`) on the affected alerts, which are not retried.
 
 ## Development
 
