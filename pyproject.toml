@@ -70,10 +70,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
-# Resolved from GitHub rather than PyPI while the kernel is unpublished there.
+# Pinned to a commit SHA (reproducible). Resolved from GitHub rather than PyPI while the kernel is unpublished there.
 # A direct URL is not permitted inside an extra, so the version requirement
 # lives in `project.optional-dependencies` and the source is declared here.
-black-scholes-model = { git = "https://github.com/buzludeniz/black_scholes_model.git" }
+black-scholes-model = { git = "https://github.com/buzludeniz/black_scholes_model.git", rev = "a3336ec0bbd796ec42a216b9c758d9d7474ce4ef" }
 
 [tool.ruff]
 target-version = "py311"
