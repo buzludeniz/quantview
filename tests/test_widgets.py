@@ -456,6 +456,15 @@ class TestDashboardLayout:
     def test_output_area_is_an_output_widget(self):
         assert isinstance(wg.create_output_area(), widgets.Output)
 
+    def test_output_area_layout_raises_no_deprecation_warning(self):
+        # Layout(border_radius=...) passed an unknown trait, which traitlets
+        # reports as a DeprecationWarning (and will make an error).
+        import warnings
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            wg.create_output_area()
+
     def test_dashboard_places_the_panels_in_a_sidebar_and_the_output_beside_them(self):
         dashboard = wg.create_chart_dashboard(
             wg.create_equity_dashboard_controls(SYMBOLS),

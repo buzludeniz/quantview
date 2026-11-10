@@ -27,9 +27,12 @@ dependencies = [
     "ipywidgets>=8.1.0",
     "ipykernel>=6.29.0",
     "jupyterlab>=4.2.0",
-    "PyQt6>=6.7.0",
+    # <6.12: the 6.12.0 type stubs contain `*args, /` (a positional-only marker after
+    # *args), which is invalid syntax, so mypy aborts while parsing PyQt6/QtGui.pyi.
+    # Lift the bound once a PyQt6 release ships valid stubs.
+    "PyQt6>=6.7.0,<6.12",
     "pyqtgraph>=0.13.7",
-    "PyQt6-Charts>=6.7.0",
+    "PyQt6-Charts>=6.7.0,<6.12",  # keep in step with PyQt6
     "pydantic-settings>=2.5.0",
     "apscheduler>=3.10.4",
     "pytz>=2024.2",
@@ -191,6 +194,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
