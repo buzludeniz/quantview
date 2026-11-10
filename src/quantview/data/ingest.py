@@ -24,6 +24,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from quantview.config import get_settings
+from quantview.data.alerts import process_alerts
 from quantview.data.connection import get_connection
 from quantview.data.connectors import (
     AlphaVantageConnector,
@@ -661,6 +662,7 @@ def run_daily_ingest(
         stats["errors"].append(error_msg)
         raise
 
+    stats["alerts"] = process_alerts(conn)
     stats["duration_seconds"] = time.time() - start_time
     logger.info(f"Daily EOD ingestion completed in {stats['duration_seconds']:.2f}s: {stats}")
     return stats
@@ -768,6 +770,7 @@ def run_intraday_ingest(
         stats["errors"].append(error_msg)
         raise
 
+    stats["alerts"] = process_alerts(conn)
     stats["duration_seconds"] = time.time() - start_time
     logger.info(f"Intraday ingestion completed in {stats['duration_seconds']:.2f}s: {stats}")
     return stats

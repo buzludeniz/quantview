@@ -104,6 +104,27 @@ def connection_context(read_only: bool = False) -> Generator[duckdb.DuckDBPyConn
         pass
 
 
+def create_alerts_table(conn: duckdb.DuckDBPyConnection) -> None:
+    """Create the alerts table and its ID sequence if they do not exist.
+
+    Shared by ``init_database`` and the alerting module, so an ingest running on
+    a database built only by ``init_schema`` can still record alerts.
+    """
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS alerts (
+            id BIGINT PRIMARY KEY,
+            timestamp TIMESTAMP NOT NULL,
+            symbol VARCHAR NOT NULL,
+            alert_type VARCHAR NOT NULL,
+            message VARCHAR NOT NULL,
+            severity VARCHAR NOT NULL,  -- 'info', 'warning', 'critical'
+            acknowledged BOOLEAN DEFAULT FALSE,
+            metadata JSON
+        )
+    """)
+    conn.execute("CREATE SEQUENCE IF NOT EXISTS alert_id_seq START 1")
+
+
 def init_database(conn: duckdb.DuckDBPyConnection | None = None) -> None:
     """Initialize the database schema.
 
@@ -210,21 +231,7 @@ def init_database(conn: duckdb.DuckDBPyConnection | None = None) -> None:
     """)
 
     # Alerts and signals
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS alerts (
-            id BIGINT PRIMARY KEY,
-            timestamp TIMESTAMP NOT NULL,
-            symbol VARCHAR NOT NULL,
-            alert_type VARCHAR NOT NULL,
-            message VARCHAR NOT NULL,
-            severity VARCHAR NOT NULL,  -- 'info', 'warning', 'critical'
-            acknowledged BOOLEAN DEFAULT FALSE,
-            metadata JSON
-        )
-    """)
-
-    # Create sequence for alert IDs
-    conn.execute("CREATE SEQUENCE IF NOT EXISTS alert_id_seq START 1")
+    create_alerts_table(conn)
 
     # Indexes for common query patterns
     conn.execute(
