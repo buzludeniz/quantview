@@ -21,7 +21,7 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install system dependencies
         run: |
@@ -42,7 +42,7 @@ jobs:
             xvfb
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v10.3.3
         with:
           enable-cache: true
 
@@ -52,7 +52,6 @@ jobs:
           # --all-extras pulls in the optional kernel so the surfaces tests run
           # here rather than skipping in CI.
           uv sync --locked --all-extras
-          uv pip install pytest pytest-cov pytest-asyncio ruff mypy
 
       - name: Lint
         run: uv run ruff check .
@@ -68,11 +67,11 @@ jobs:
         # The integration marker is registered in pyproject.toml under
         # [tool.pytest.ini_options]; do not pass --markers here, because that flag
         # makes pytest print the marker list and exit without running a single test.
-        run: xvfb-run -a uv run pytest --cov=quantview --cov-report=xml --cov-fail-under=85
+        run: xvfb-run -a uv run pytest --cov-report=xml --cov-fail-under=85
 
       - name: Upload coverage
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-py${{ matrix.python-version }}
           path: coverage.xml
@@ -84,7 +83,7 @@ jobs:
     needs: test
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install system dependencies
         # The smoke test imports quantview.desktop, which loads PyQt6.QtCharts.
@@ -107,7 +106,7 @@ jobs:
             libxcb-xinerama0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v10.3.3
 
       - name: Build
         run: uv build

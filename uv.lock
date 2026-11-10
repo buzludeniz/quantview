@@ -256,7 +256,7 @@ wheels = [
 [[package]]
 name = "black-scholes-model"
 version = "0.2.0"
-source = { git = "https://github.com/buzludeniz/black_scholes_model.git#82c05e11dd2f6df01d59202055691b215ec1f9b8" }
+source = { git = "https://github.com/buzludeniz/black_scholes_model.git?rev=a3336ec0bbd796ec42a216b9c758d9d7474ce4ef#a3336ec0bbd796ec42a216b9c758d9d7474ce4ef" }
 dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -2783,7 +2783,7 @@ surfaces = [
 [package.metadata]
 requires-dist = [
     { name = "apscheduler", specifier = ">=3.10.4" },
-    { name = "black-scholes-model", marker = "extra == 'surfaces'", git = "https://github.com/buzludeniz/black_scholes_model.git" },
+    { name = "black-scholes-model", marker = "extra == 'surfaces'", git = "https://github.com/buzludeniz/black_scholes_model.git?rev=a3336ec0bbd796ec42a216b9c758d9d7474ce4ef" },
     { name = "duckdb", specifier = ">=1.1.0" },
     { name = "fredapi", specifier = ">=0.4.3" },
     { name = "ipykernel", specifier = ">=6.29.0" },
