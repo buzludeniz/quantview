@@ -13,7 +13,7 @@ import sys
 from collections.abc import Callable
 
 import pandas as pd
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QCoreApplication, Qt
 from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QApplication,
@@ -235,7 +235,9 @@ def main(argv: list[str] | None = None) -> int:
     Returns:
         The Qt exit code.
     """
-    app = QApplication.instance()
+    # None when no application exists yet. PyQt6 6.12.1's stub types instance() as
+    # returning Self, which leaves out that case.
+    app: QCoreApplication | None = QApplication.instance()
     owns_app = app is None
     if app is None:
         app = QApplication(argv if argv is not None else sys.argv)

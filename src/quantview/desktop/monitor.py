@@ -35,9 +35,11 @@ class Monitor(QObject):
     """
 
     # Qt signals are camelCase by convention, which pep8-naming flags here.
-    dataReady = pyqtSignal(object)
-    errorRaised = pyqtSignal(str)
-    pollCountChanged = pyqtSignal(int)
+    # The ignores: PyQt6 6.12.1's stub declares pyqtSignal's `arguments` keyword
+    # without a default, but it is optional at runtime (the monitor tests emit all three).
+    dataReady = pyqtSignal(object)  # type: ignore[call-arg]
+    errorRaised = pyqtSignal(str)  # type: ignore[call-arg]
+    pollCountChanged = pyqtSignal(int)  # type: ignore[call-arg]
 
     def __init__(
         self,
