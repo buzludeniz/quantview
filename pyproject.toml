@@ -27,12 +27,12 @@ dependencies = [
     "ipywidgets>=8.1.0",
     "ipykernel>=6.29.0",
     "jupyterlab>=4.2.0",
-    # <6.12: the 6.12.0 type stubs contain `*args, /` (a positional-only marker after
+    # !=6.12.0: its type stubs contain `*args, /` (a positional-only marker after
     # *args), which is invalid syntax, so mypy aborts while parsing PyQt6/QtGui.pyi.
-    # Lift the bound once a PyQt6 release ships valid stubs.
-    "PyQt6>=6.7.0,<6.12",
+    # 6.12.1 ships valid stubs again.
+    "PyQt6>=6.7.0,!=6.12.0",
     "pyqtgraph>=0.13.7",
-    "PyQt6-Charts>=6.7.0,<6.12",  # keep in step with PyQt6
+    "PyQt6-Charts>=6.7.0,!=6.12.0",  # keep in step with PyQt6
     "pydantic-settings>=2.5.0",
     "apscheduler>=3.10.4",
     "pytz>=2024.2",
